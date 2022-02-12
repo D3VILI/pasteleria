@@ -1,3 +1,8 @@
+<?php
+  session_start();
+ require_once("../funciones/funciones.php");
+  comprobarAdmin();
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -17,51 +22,120 @@
 </head>
 <body>
 	<?php
-	require_once("../funciones/funciones.php");
 		$conexion = conectarServidor();
 		$ruta="../";
 		$archivos="./";
 		barra($ruta,$archivos);
-		
-		echo "<form class='form-inline my-2 my-lg-0' action='./noticias.php' method='post'>
-      	 <input class='form-control' type='Search' name='busc' placeholder='Buscar' aria-label='Search'>
-         <button class='btn btn-outline-success btn-sm my-sm-0 d-inline' name='buscar' type='submit'>Buscar</button>
-    	 </form>
-    	 <form action='./fnnoticias.php'>
-    	 <input type='submit' value='Nueva Noticia'/>
-		 </form>";
 
-		 $porPagina = 5;
-		 $numNoticias = 0;
-		 $ruta = "noticias.php";
-		 $limite = 0;
+		$ruta = "noticias.php";
+		$archivos = "fnnoticias.php";
 
-		if (isset($_POST['buscar']) && $_POST['busc'] != "") {
-			$consulta = "SELECT * FROM noticias where titular like '%".$_POST['busc']."%'";
+		barraBusqueda($ruta,$archivos,"Nueva Noticia","titular","fecha");
+
+		$porPagina = 5;
+		$numNoticias = 0;
+
+
+		if (isset($_POST['buscar']) && $_POST['busc'] != "" && $_POST['ordenar'] == "0") {
+			$consulta = "SELECT * FROM noticias";
 			$res = mysqli_query($conexion,$consulta);
-			tablaNoticias($res);
-			$numNoticias = numeroResultados($res);
-		}else{
-			$consulta_General = "SELECT * FROM noticias";
-			$consulta = "SELECT * FROM noticias LIMIT ".$limite.",".$porPagina;
-
-			$res = mysqli_query($conexion,$consulta_General);
-			$resPaginacion = mysqli_query($conexion,$consulta);
-
-			tablaNoticias($resPaginacion);
-
+			//Me devuelve el numero de noticias que tengo.
 			$numNoticias= numeroResultados($res);
+			//Con el número de noticias lo divido por los que quiero poner por página y obtengo el número de páginas
 			$numeroDePaginas = paginasTotales($numNoticias,$porPagina);
-			paginacion($ruta,$numeroDePaginas);
+			
 
 			if(!isset($_GET['page'])){
 				$page = 1;
 			}else{
 				$page = $_GET['page'];
 			}
+
 			$limite = ($page-1)*$porPagina;
+			//Hago la consulta con los límites para mostrar de 5 en 5.
+			$consulta = "SELECT * FROM noticias where titular like '%".$_POST['busc']."%' order by titular DESC,fecha DESC LIMIT ".$limite.",".$porPagina;
+			$resPaginacion = mysqli_query($conexion,$consulta);
+
+			tablaNoticias($resPaginacion);
+
+			paginacion($numeroDePaginas,$resPaginacion);
+
+		}elseif (isset($_POST['buscar']) && $_POST['busc'] != "" && $_POST['ordenar'] == "titular") {
+			$consulta = "SELECT * FROM noticias";
+			$res = mysqli_query($conexion,$consulta);
+			//Me devuelve el numero de noticias que tengo.
+			$numNoticias= numeroResultados($res);
+			//Con el número de noticias lo divido por los que quiero poner por página y obtengo el número de páginas
+			$numeroDePaginas = paginasTotales($numNoticias,$porPagina);
+			
+
+			if(!isset($_GET['page'])){
+				$page = 1;
+			}else{
+				$page = $_GET['page'];
+			}
+
+			$limite = ($page-1)*$porPagina;
+			//Hago la consulta con los límites para mostrar de 5 en 5.
+			$consulta = "SELECT * FROM noticias where titular like '%".$_POST['busc']."%' order by titular ASC LIMIT ".$limite.",".$porPagina;
+			$resPaginacion = mysqli_query($conexion,$consulta);
+
+			tablaNoticias($resPaginacion);
+			paginacion($numeroDePaginas,$resPaginacion);
+			
+		}elseif (isset($_POST['buscar']) && $_POST['busc'] != "" && $_POST['ordenar'] == "fecha") {
+			$consulta = "SELECT * FROM noticias";
+			$res = mysqli_query($conexion,$consulta);
+			
+			//Me devuelve el numero de noticias que tengo.
+			$numNoticias= numeroResultados($res);
+			//Con el número de noticias lo divido por los que quiero poner por página y obtengo el número de páginas
+			$numeroDePaginas = paginasTotales($numNoticias,$porPagina);
+			
+
+			if(!isset($_GET['page'])){
+				$page = 1;
+			}else{
+				$page = $_GET['page'];
+			}
+
+			$limite = ($page-1)*$porPagina;
+			//Hago la consulta con los límites para mostrar de 5 en 5.
+			$consulta = "SELECT * FROM noticias where titular like '%".$_POST['busc']."%' order by fecha DESC LIMIT ".$limite.",".$porPagina;
+			$resPaginacion = mysqli_query($conexion,$consulta);
+
+			tablaNoticias($resPaginacion);
+			paginacion($numeroDePaginas,$resPaginacion);
+
+		}else{
+			$consulta = "SELECT * FROM noticias";
+			
+			$res = mysqli_query($conexion,$consulta);
+			//Me devuelve el numero de noticias que tengo.
+			$numNoticias= numeroResultados($res);
+			//Con el número de noticias lo divido por los que quiero poner por página y obtengo el número de páginas
+			$numeroDePaginas = paginasTotales($numNoticias,$porPagina);
+
+			if(!isset($_GET['page'])){
+				$page = 1;
+			}else{
+				$page = $_GET['page'];
+			}
+
+			$limite = ($page-1)*$porPagina;
+
+			//Hago la consulta con los límites para mostrar de 5 en 5.
+			$consulta = "SELECT * FROM noticias order by fecha DESC LIMIT ".$limite.",".$porPagina;
+			$resPaginacion = mysqli_query($conexion,$consulta);
+
+			
+			tablaNoticias($resPaginacion);
+			paginacion($numeroDePaginas,$resPaginacion);
+			
+
 		}
 		 mysqli_close($conexion);
+		 footer();
 	  ?>
 </body>
 </html>

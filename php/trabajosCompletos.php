@@ -1,14 +1,13 @@
 <?php
   session_start();
-  if(isset($_COOKIE['sesion'])){
-    session_decode($_COOKIE['sesion']);
-  }
+  require_once("../funciones/funciones.php");
+  comprobarClienteNormal();
 ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
 	<meta charset="UTF-8">
-	<title>Noticia</title>
+	<title>Trabajo Completo</title>
 	 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
@@ -23,26 +22,26 @@
 </head>
 <body>
 	<?php
-	require_once("../funciones/funciones.php");
 		$ruta="../";
 		$archivos="./";
 		barra($ruta,$archivos);
 		
-		$titular = $_GET['Titular'];
-		$fecha = $_GET['Fecha'];
-		$contenido = $_GET['Contenido'];
+		$titular = $_GET['Titulo'];
+		$precio = $_GET['Precio'];
+		$contenido = $_GET['Descripción'];
 		$imagen = $_GET['Imagen'];
+		
 
 		echo "<div class='container-fluid mb-3 arriba'>
 				<div class ='row no-gutters'>
 					<div class='col-md-4'>
 						<img src='".$imagen."' class='card-img' alt='Responsive image'>
 					</div>
-						<div class='card col-md-8 iv'>
+						<div class='card col-mb-8 iv'>
 							<div class='card-body'>
 				   				<h3 class='card-title'>$titular</h3>
 				    			<p class='card-text'>$contenido.</p>
-				    			<p class='card-text'><small class='text-muted'>".fechaEspañol($fecha)."</small>
+				    			<p class='card-text'><small class='text-muted'>".$precio."€</small>
 				 		 	</div>
 						</div>
 				</div>

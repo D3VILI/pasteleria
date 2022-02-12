@@ -1,3 +1,8 @@
+<?php
+  session_start();
+  require_once("../funciones/funciones.php");
+  comprobarAdmin();
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -17,7 +22,6 @@
 </head>
 <body>
 	<?php
-		require_once("../funciones/funciones.php");
 		$conexion = conectarServidor();
 		$ruta = "../";
 		$archivos = "./";
@@ -25,46 +29,59 @@
 		
 		$idIncremental = idActual("noticias");
 
-		echo "<form action='fnnoticias.php' method='post' enctype='multipart/form-data'>
-		Titular:
-		<br>
-		<input type='text' name='titular' required>
-		<br>
-		Contenido:
-		<br>
-		 <textarea name='contenido' placeholder='Escribe...' required></textarea>
-		<br>
-		Fecha:
-		<br>
-		<input type='date' name='fecha'>
-		<br>
-		Seleccionar una Imagen:
-		<br>
-		<input type='file' name='imagen' required>
-		<br><br>
-		<input type='submit' name='enviar'>
-		</form>";
+		echo "<div class='container arriba'><form action='fnnoticias.php' method='post' enctype='multipart/form-data'>
+		<div class='form-row'>
+			<div class='form-group col-md-4'>
+				<label for='$idIncremental'>ID</label>
+				<input type='text' class='form-control' id='$idIncremental' value='$idIncremental' disabled>
+			</div>
+			<div class='form-group col-md-4'>
+			 <label for='titula'>Titular*</label>
+			 <input type='text' class='form-control' id='titula' name='titular' required>
+			</div>
+			<div class='form-group col-md-4'>
+				<label for='fech'>Fecha*</label>
+				<input type='date' class='form-control' id='fech' name='fecha' required>
+			</div>
+		</div>
+		<div class='form-row'>
+			<div class='form-group col-md-6'>
+				<label for='contenid'>Contenido*</label>
+			 	<textarea name='contenido' class='form-control' id='contenid' placeholder='Escribe...' required></textarea>
+			</div>
+			<div class='form-group col-md-6'>
+				<label for='imag'>Seleccionar una Imagen*</label>
+				<input class='form-control' type='file' id='imag' name='imagen' required>
+			</div>
+		</div>
+		<input class='btn-primary' type='submit' name='enviar'>
+		</form></div>";
 		
-		if (isset($_POST['enviar']) && $_POST['titular'] != "") {
-			$titular = $_POST['titular'];
-			$contenido = $_POST['contenido'];
-			$fecha = $_POST['fecha'];
-			$nomb_tempo = $_FILES['imagen']['tmp_name'];
-			$nombre_imagen = $_FILES['imagen']['name'];
+		if (isset($_POST['enviar'])) {
+			if($_POST['titular'] != ""  && $_POST['contenido'] != ""  && $_POST['fecha'] != ""  && $_FILES['imagen']['size'] > 0){
+				$titular = $_POST['titular'];
+				$contenido = $_POST['contenido'];
+				$fecha = $_POST['fecha'];
+				$nomb_tempo = $_FILES['imagen']['tmp_name'];
+				$nombre_imagen = $_FILES['imagen']['name'];
 
-			if(!file_exists("../assets/images")){
-				mkdir("../assets/images");
+				if(!file_exists("../assets/images")){
+					mkdir("../assets/images");
+				}
+
+				$ruta = "../assets/images/$idIncremental$nombre_imagen";
+				move_uploaded_file($nomb_tempo,$ruta);
+
+				$insertar = "INSERT INTO noticias (id,titular,contenido,imagen,fecha) VALUES (null,'$titular','$contenido','$ruta','$fecha')";
+				mysqli_query($conexion,$insertar);
+		 		echo "Se insertó correctamente,sera redirigido inmediatamente";
+		 		header("refresh:1;url=noticias.php");
+			}else{
+				echo "Ninguno de los campos con * puede estar vacío";
 			}
-
-			$ruta = "../assets/images/$idIncremental$nombre_imagen";
-			move_uploaded_file($nomb_tempo,$ruta);
-
-			$insertar = "INSERT INTO noticias (id,titular,contenido,imagen,fecha) VALUES (null,'$titular','$contenido','$ruta','$fecha')";
-			mysqli_query($conexion,$insertar);
-	 		echo "Se insertó correctamente";
-	 		mysqli_close($conexion);
 		}
-
+		mysqli_close($conexion);
+		footer();
 	?>
 	
 </body>

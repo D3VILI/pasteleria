@@ -1,8 +1,14 @@
+<?php
+  session_start();
+  if(isset($_COOKIE['sesion'])){
+    session_decode($_COOKIE['sesion']);
+  }
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
 	<meta charset="UTF-8">
-	<title>Noticias</title>
+	<title>Trabajos</title>
 	 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
@@ -19,27 +25,46 @@
 	<?php
 	require_once("../funciones/funciones.php");
 		$conexion = conectarServidor();
-		$ruta="../";
-		$archivos="./";
+		$ruta ="../";
+		$archivos ="./";
 		barra($ruta,$archivos);
-		
-		echo "<form class='form-inline my-2 my-lg-0' action='./trabajos.php' method='post'>
-      	 <input class='form-control' type='Search' name='busc' placeholder='Buscar' aria-label='Search'>
-         <button class='btn btn-outline-success btn-sm my-sm-0 d-inline' name='buscar' type='submit'>Buscar</button>
-    	 </form>
-    	 <form action='./fntrabajo.php'>
-    	 <input type='submit' value='Nuevo Trabajo'/>
-		 </form>";
-		if (isset($_POST['buscar']) && $_POST['busc'] != "") {
+
+		$ruta = "trabajos.php";
+		$archivos = "fntrabajo.php";
+
+		barraBusqueda($ruta,$archivos,"Nuevo Trabajo","cliente","");
+
+	if(isset($_SESSION['id']) == "" || $_SESSION['id'] == 0){
+		if(isset($_POST['buscar']) && $_POST['busc'] != "" && $_POST['ordenar'] == "0") {
 			$consulta = "SELECT * FROM trabajos where titulo like '%".$_POST['busc']."%'";
 			$res = mysqli_query($conexion,$consulta);
-			tablaTrabajos($res);
+			tablaTrabajos($res,$ruta);
+		}elseif (isset($_POST['buscar']) && $_POST['busc'] != "" && $_POST['ordenar'] == "cliente") {
+			$consulta = "SELECT * FROM trabajos,clientes where clientes.id=trabajos.cliente and titulo like '%".$_POST['busc']."%' order by clientes.nombre";
+			$res = mysqli_query($conexion,$consulta);
+			tablaTrabajos($res,$ruta);
 		}else{
 			$consulta = "SELECT * FROM trabajos";
 			$res = mysqli_query($conexion,$consulta);
-			tablaTrabajos($res);
+			tablaTrabajos($res,$ruta);
 		}
-		 mysqli_close($conexion);
-	  ?>
+	}else{
+		if(isset($_POST['buscar']) && $_POST['busc'] != "" && $_POST['ordenar'] == "0") {
+			$consulta = "SELECT * FROM trabajos,clientes where clientes.id=trabajos.cliente and clientes.id = $_SESSION[id] and titulo like '%".$_POST['busc']."%'";
+			$res = mysqli_query($conexion,$consulta);
+			tablaTrabajos($res,$ruta);
+		}elseif (isset($_POST['buscar']) && $_POST['busc'] != "" && $_POST['ordenar'] == "cliente") {
+			$consulta = "SELECT * FROM trabajos,clientes where clientes.id=trabajos.cliente and clientes.id = $_SESSION[id] and titulo like '%".$_POST['busc']."%' order by clientes.nombre";
+			$res = mysqli_query($conexion,$consulta);
+			tablaTrabajos($res,$ruta);
+		}else{
+			$consulta = "SELECT * FROM trabajos,clientes where clientes.id = trabajos.cliente and clientes.id = $_SESSION[id]";
+			$res = mysqli_query($conexion,$consulta);
+			tablaTrabajos($res,$ruta);
+		}
+	}
+	mysqli_close($conexion);
+	footer();
+	?>
 </body>
 </html>

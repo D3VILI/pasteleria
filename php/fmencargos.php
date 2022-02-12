@@ -7,7 +7,7 @@
 <html lang="es">
 <head>
 	<meta charset="UTF-8">
-	<title>Nuevo Encargo</title>
+	<title>Modificar Encargos</title>
 	 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
@@ -19,7 +19,6 @@
      <script type="text/javascript" src="../assets/js/bootstrap.min.js"></script>
       <script type="text/javascript" src="../assets/js/bootstrap.bundle.min.js"></script>
       <script type="text/javascript" src="../assets/js/app.js"></script>
-      <script type="text/javascript" src="../assets/js/appEncargo.js"></script>
 </head>
 <body>
 	<?php
@@ -27,25 +26,29 @@
 		$ruta = "../";
 		$archivos = "./";
 		barra($ruta,$archivos);
-		$idIncremental = idActual("encargos");
-		
-		echo "<div class='container arriba'><form action='fnencargos.php' method='post'>
+
+		$id = $_GET['id'];
+		$fecha = $_GET['Fecha'];
+		$hora = $_GET['Hora'];
+		$producto = $_GET['Producto'];
+		$extra = $_GET['Extra'];
+		$cliente = $_GET['Cliente'];
+
+		echo "<div class='container arriba'><form action='fmencargos.php?id=$id&Fecha=$fecha&Hora=$hora&Producto=$producto&Extra=$extra&Cliente=$cliente' method='post'>
 		<div class='form-row'>
-			<div class='form-group col-md-4'>
-				<label for='$idIncremental'>ID</label>
-				<input type='text' class='form-control' id='$idIncremental' value='$idIncremental' disabled>
-			</div>
-			<div class='form-group col-md-4'>
+			<div class='form-group col-md-6'>
 				<label for='fecha'>Fecha Recogida*</label>
-				<input type='date' class='form-control' id='fecha' name='fecha' required>
+				<input type='date' class='form-control' id='fecha' name='fecha' value='$fecha' required>
 			</div>
-			<div class='form-group col-md-4'>
+			<div class='form-group col-md-6'>
 				<label for='horario'>Hora de Recogida*</label>
-				<input type='time' class='form-control' id='horario' name='horario' required>
+				<input type='time' class='form-control' id='horario' name='horario' value='$hora' required>
 			</div>
+
 		</div>
 		<div class='form-row'>
 			<div class='form-group col-md-4'>
+				<input type='text' value='$producto' disabled>
 				<label for='producto'>Producto encargado*</label>
 				<select class='form-control' name='producto' id='producto'>";
 				$consulta2 = "SELECT id,nombre FROM productos";
@@ -58,43 +61,44 @@
 			</div>
 			<div class='form-group col-md-4'>
 					<label for='extra'>Información Extra</label>
-					<input type='text' class='form-control' id='extra' name='extra'>
-			</div>
-			
+					<input type='text' class='form-control' id='extra' name='extra' value='$extra'>
+			</div>	
 			<div class='form-group col-md-4'>
+				<input type='text' value='".dimeCliente($cliente)."' disabled>
 				<label for='cliente'>ID Cliente*</label>
 				<select class='form-control' name='cliente' id='cliente'>";
-				$consulta = "SELECT id,nombre FROM clientes";
+				if(isset($_SESSION['id']) == "" || $_SESSION['id'] == 0){
+					$consulta = "SELECT id,nombre FROM clientes";
+				}else{
+					$consulta = "SELECT id,nombre FROM clientes where id = $_SESSION[id]";
+				}
 				$res = mysqli_query($conexion,$consulta);
 				selectCliente($res);
 				echo "</select>
 			</div>
 		</div>
-		<input class='btn-primary' type='submit' name='enviar' id='encargado'>
+		<input class='btn-primary' type='submit' name='enviar'>
 		</form></div>";
 
-		if (isset($_POST['enviar'])) {
-			if($_POST['producto'] != "" && $_POST['horario'] != "" && $_POST['cliente'] != ""){
-				
-				$horario = $_POST['horario'];
-				$extra = $_POST['extra'];
+		if (isset($_POST['enviar'])){
+			if( $_POST['fecha'] != "" && $_POST['horario'] != "" && $_POST['producto'] != "" && $_POST['cliente'] != ""){
 				$fecha = $_POST['fecha'];
-				$cliente = $_POST['cliente'];
+				$horario = $_POST['horario'];
 				$producto = $_POST['producto'];
-
-				$insertar = "INSERT INTO encargos (id,fecha,hora,producto,extra,cliente) VALUES (null,'$fecha','$horario',$producto,'$extra',$cliente)";
-
-				mysqli_query($conexion,$insertar);
-		 		echo "Se insertó correctamente,sera redirigido inmediatamente";
+				$extra = $_POST['extra'];
+				$cliente = $_POST['cliente'];
+				
+				$actualizar = "UPDATE encargos SET fecha = '$fecha',hora = '$horario',producto = $producto,extra = '$extra' ,cliente = '$cliente' where id = $id";
+				mysqli_query($conexion,$actualizar);
+		 		echo "Se modificó correctamente, será redirigido inmediatamente.";
 		 		header("refresh:1;url=encargos.php");
 			}else{
 				echo "Ninguno de los campos con * puede estar vacío";
 			}
-			
 		}
 		mysqli_close($conexion);
 		footer();
+
 	?>
-	
 </body>
 </html>

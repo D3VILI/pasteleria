@@ -1,8 +1,19 @@
+<?php
+  session_start();
+  if(isset($_COOKIE['sesion'])){
+    session_decode($_COOKIE['sesion']);
+  }
+  if(isset($_SESSION['id']) == "" || $_SESSION['id'] == 0){
+  		
+  }else{
+  	header("refresh:0;url=acceso.php");
+  }
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
 	<meta charset="UTF-8">
-	<title>Clientes</title>
+	<title>Productos</title>
 	 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <link rel="stylesheet" href="../assets/css/bootstrap.min.css">
@@ -22,24 +33,112 @@
 		$ruta="../";
 		$archivos="./";
 		barra($ruta,$archivos);
+
+		$ruta = "productos.php";
+		$archivos = "fnproductos.php";
+
+		barraBusqueda($ruta,$archivos,"Nuevo Producto","nombre","precio");
 		
-		echo "<form class='form-inline my-2 my-lg-0' action='./clientes.php' method='post'>
-      	 <input class='form-control' type='Search' name='busc' placeholder='Buscar' aria-label='Search'>
-         <button class='btn btn-outline-success btn-sm my-sm-0 d-inline' name='buscar' type='submit'>Buscar</button>
-     	</form>
-     	 <form action='./fnproductos.php'>
-    	 <input type='submit' value='Nuevo Producto'/>
-		 </form>";
-		if (isset($_POST['buscar']) && $_POST['busc'] != "") {
-			$consulta = "SELECT * FROM productos where nombre like '%".$_POST['busc']."%' or precio like '%".$_POST['busc']."%'";
+		$porPagina = 5;
+		$numProductos = 0;
+
+		if (isset($_POST['buscar']) && $_POST['busc'] != "" && $_POST['ordenar'] == "0") {
+			$consulta = "SELECT * FROM productos";
 			$res = mysqli_query($conexion,$consulta);
-			tablaProductos($res);
+			//Me devuelve el numero de productos que tengo.
+			$numProductos= numeroResultados($res);
+			//Con el número de productos lo divido por los que quiero poner por página y obtengo el número de páginas
+			$numeroDePaginas = paginasTotales($numProductos,$porPagina);
+				
+			if(!isset($_GET['page'])){
+				$page = 1;
+			}else{
+				$page = $_GET['page'];
+			}
+
+			$limite = ($page-1)*$porPagina;
+
+			//Hago la consulta con los límites para mostrar de 5 en 5.
+			$consulta = "SELECT * FROM productos where nombre like '%".$_POST['busc']."%' or precio like '%".$_POST['busc']."%' order by precio,nombre LIMIT ".$limite.",".$porPagina;
+			$resPaginacion = mysqli_query($conexion,$consulta);
+
+			tablaProductos($resPaginacion);
+			paginacion($numeroDePaginas,$resPaginacion);
+			
+		}elseif (isset($_POST['buscar']) && $_POST['busc'] != "" && $_POST['ordenar'] == "nombre") {
+			$consulta = "SELECT * FROM productos";
+			$res = mysqli_query($conexion,$consulta);
+
+			//Me devuelve el numero de productos que tengo.
+			$numProductos= numeroResultados($res);
+			//Con el número de productos lo divido por los que quiero poner por página y obtengo el número de páginas
+			$numeroDePaginas = paginasTotales($numProductos,$porPagina);
+				
+			if(!isset($_GET['page'])){
+				$page = 1;
+			}else{
+				$page = $_GET['page'];
+			}
+
+			$limite = ($page-1)*$porPagina;
+
+			//Hago la consulta con los límites para mostrar de 5 en 5.
+			$consulta = "SELECT * FROM productos where nombre like '%".$_POST['busc']."%' or precio like '%".$_POST['busc']."%' order by nombre LIMIT ".$limite.",".$porPagina;
+			$resPaginacion = mysqli_query($conexion,$consulta);
+
+			tablaProductos($resPaginacion);
+			paginacion($numeroDePaginas,$resPaginacion);
+
+		}elseif (isset($_POST['buscar']) && $_POST['busc'] != "" && $_POST['ordenar'] == "precio") {
+			$consulta = "SELECT * FROM productos";
+			$res = mysqli_query($conexion,$consulta);
+
+			//Me devuelve el numero de productos que tengo.
+			$numProductos= numeroResultados($res);
+			//Con el número de productos lo divido por los que quiero poner por página y obtengo el número de páginas
+			$numeroDePaginas = paginasTotales($numProductos,$porPagina);
+				
+			if(!isset($_GET['page'])){
+				$page = 1;
+			}else{
+				$page = $_GET['page'];
+			}
+
+			$limite = ($page-1)*$porPagina;
+
+			//Hago la consulta con los límites para mostrar de 5 en 5.
+			$consulta = "SELECT * FROM productos where nombre like '%".$_POST['busc']."%' or precio like '%".$_POST['busc']."%' order by precio LIMIT ".$limite.",".$porPagina;
+			$resPaginacion = mysqli_query($conexion,$consulta);
+
+			tablaProductos($resPaginacion);
+			paginacion($numeroDePaginas,$resPaginacion);
+
 		}else{
 			$consulta = "SELECT * FROM productos";
 			$res = mysqli_query($conexion,$consulta);
-			tablaProductos($res);
+
+			//Me devuelve el numero de productos que tengo.
+			$numProductos= numeroResultados($res);
+			//Con el número de productos lo divido por los que quiero poner por página y obtengo el número de páginas
+			$numeroDePaginas = paginasTotales($numProductos,$porPagina);
+				
+			if(!isset($_GET['page'])){
+				$page = 1;
+			}else{
+				$page = $_GET['page'];
+			}
+
+			$limite = ($page-1)*$porPagina;
+
+			//Hago la consulta con los límites para mostrar de 5 en 5.
+			$consulta = "SELECT * FROM productos LIMIT ".$limite.",".$porPagina;
+			$resPaginacion = mysqli_query($conexion,$consulta);
+
+			tablaProductos($resPaginacion);
+			paginacion($numeroDePaginas,$resPaginacion);
 		}
 		 mysqli_close($conexion);
+		 footer();
 	  ?>
 </body>
 </html>

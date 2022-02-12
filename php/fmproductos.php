@@ -1,3 +1,8 @@
+<?php
+  session_start();
+  require_once("../funciones/funciones.php");
+  comprobarAdmin();
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -17,7 +22,6 @@
 </head>
 <body>
 	<?php
-		require_once("../funciones/funciones.php");
 		$conexion = conectarServidor();
 		$ruta = "../";
 		$archivos = "./";
@@ -27,50 +31,62 @@
 		$nombre = $_GET['Nombre'];
 		$descripcion = $_GET['Descripción'];
 		$precio = $_GET['Precio'];
+		$imagen = $_GET['Imagen'];
 
-		echo "<form action='fmproductos.php?id=$id&Nombre=$nombre&Descripción=$descripcion&Precio=$precio' method='post' enctype=multipart/form-data>
-		Nombre:
-		<br>
-		<input type='text' name='nomb' placeholder='$nombre' required>
-		<br>
-		Descripción:
-		<br>
-		 <textarea name='descripcion' placeholder='$descripcion' required></textarea>
-		<br>
-		Precio:
-		<br>
-		<input type='text' placeholder='$precio' name='precio'>
-		<br>
-		Seleccionar una Imagen:
-		<br>
-		<input type='file' name='imagen' required>
-		<br><br>
-		<input type='submit' name='enviar'>
-		</form>";
+		echo "<div class='container arriba'><form action='fmproductos.php?id=$id&Nombre=$nombre&Descripción=$descripcion&Precio=$precio&Imagen=$imagen' method='post' enctype=multipart/form-data>
+		<div class='form-row'>
+			<div class='form-group col-md-6'>
+				<label for='nombre'>Nombre*</label>
+				<input type='text' class='form-control' id='nombre' name='nomb' value='$nombre' required>
+			</div>
+			<div class='form-group col-md-6'>
+				<label for='descripcion'>Descripción*</label>
+				<textarea class='form-control' id='descripcion' name='descripcion' placeholder='$descripcion'></textarea>
+			</div>
+		</div>
+		<div class='form-row'>
+			<div class='form-group col-md-6'>
+				<label for='precio'>Precio*</label>
+				<input type='text' class='form-control' id='precio' name='precio' value='$precio' required>
+			</div>
+			<div class='form-group col-md-6'>
+				<label for='imag'>Seleccionar una Imagen</label>
+				<input class='form-control' type='file' id='imag' name='imagen'>
+			</div>
+		</div>
+		<input class='btn-primary' type='submit' name='enviar'>
+		</form></div>";
 
-		if (isset($_POST['enviar']) && $_POST['nomb'] != "") {
-			$nombre = $_POST['nomb'];
-			$descripcion = $_POST['descripcion'];
-			$precio = $_POST['precio'];
-			$nomb_tempo = $_FILES['imagen']['tmp_name'];
-			$nombre_imagen = $_FILES['imagen']['name'];
-			
+		if (isset($_POST['enviar'])){
+			if($_POST['nomb'] != "" && $_POST['descripcion'] != "" && $_POST['precio'] != ""){
+				$nombre = $_POST['nomb'];
+				$descripcion = $_POST['descripcion'];
+				$precio = $_POST['precio'];
+				$nomb_tempo = $_FILES['imagen']['tmp_name'];
+				$nombre_imagen = $_FILES['imagen']['name'];
+				$ruta = "";
 
-			if(!file_exists("../assets/images")){
-				mkdir("../assets/images");
+				if(!file_exists("../assets/images")){
+					mkdir("../assets/images");
+				}
+
+				if($_FILES['imagen']['size'] == 0){
+					$ruta = $imagen;
+				}else{
+					$ruta = "../assets/images/$id$imagen";
+					move_uploaded_file($nomb_tempo,$ruta);
+				}
+
+				$actualizar = "UPDATE productos SET nombre = '$nombre',descripción = '$descripcion',precio = $precio,imagen = '$ruta'  where id = $id";
+				mysqli_query($conexion,$actualizar);
+		 		echo "Se modificó correctamente, será redirigido inmediatamente";
+		 		header("refresh:1;url=productos.php");
+			}else{
+				echo "Ninguno de los campos con * puede estar vacío";
 			}
-
-			$ruta = "../assets/images/$nombre_imagen";
-			move_uploaded_file($nomb_tempo,$ruta);
-
-
-			$actualizar = "UPDATE productos SET nombre = '$nombre',descripción = '$descripcion',precio = $precio,imagen = '$ruta'  where id = $id";
-			mysqli_query($conexion,$actualizar);
-	 		echo "Se modificó correctamente, será redirigido inmediatamente";
-	 		header("refresh:1;url=productos.php");
-	 		mysqli_close($conexion);
 		}
-
+		mysqli_close($conexion);
+		footer();
 	?>
 </body>
 </html>

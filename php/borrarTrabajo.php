@@ -1,3 +1,8 @@
+<?php
+  session_start();
+  require_once("../funciones/funciones.php");
+  comprobarAdmin(); 
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -17,7 +22,6 @@
 </head>
 <body>
 	<?php
-	require_once("../funciones/funciones.php");
 		$conexion = conectarServidor();
 		$id = $_GET['id'];
 		$consulta = "DELETE FROM trabajos where id = $id";

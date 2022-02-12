@@ -1,3 +1,8 @@
+<?php
+  session_start();
+  require_once("../funciones/funciones.php");
+  comprobarAdmin();
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -17,7 +22,6 @@
 </head>
 <body>
 	<?php
-		require_once("../funciones/funciones.php");
 		$conexion = conectarServidor();
 		$ruta = "../";
 		$archivos = "./";
@@ -29,24 +33,34 @@
 		$precio = $_GET['Precio'];
 		$imagen = $_GET['Imagen'];
 		$descripcion = $_GET['Descripción'];
-		echo "<form action='fmtrabajos.php?id=$id&Cliente=$cliente&Titulo=$titulo&Descripción=$descripcion&Imagen=$imagen&Precio=$precio' method='post'>
-		Cliente:
-		<br>
-		<input type='text' name='cliente' placeholder='$cliente' required>
-		<br><br>
-		<input type='submit' name='enviar'>
-		</form>";
+		echo "<div class='container arriba'><form action='fmtrabajos.php?id=$id&Cliente=$cliente&Titulo=$titulo&Descripción=$descripcion&Imagen=$imagen&Precio=$precio' method='post'>
+		<div class='form-row'>
+			<div class='form-group col-md-6'>
+				<label for='cliente'>Nombre Del Cliente Actual</label>
+				<input type='text' class='form-control' value='".dimeCliente($cliente)."' disabled>
+			</div>
+			<div class='form-group col-md-6'>
+				<label for='cliente'>Cliente*</label>
+				<select  class='form-control' name='cliente' id='cliente'>";
+				$consulta = "SELECT id,nombre FROM clientes";
+				$res = mysqli_query($conexion,$consulta);
+				selectCliente($res);
+			echo "</select></div>
+		</div>
+		<input class='btn-primary' type='submit' name='enviar'>
+		</form></div>";
 
-		if (isset($_POST['enviar']) && $_POST['cliente'] != "") {
-			$cliente = $_POST['cliente'];
-	
-			$actualizar = "UPDATE trabajos SET titulo = '$titulo',descripción = '$descripcion',cliente = '$cliente',precio = $precio,imagen = '$imagen' where id = $id";
-			mysqli_query($conexion,$actualizar);
-	 		echo "Se modificó correctamente, será redirigido inmediatamente";
-	 		header("refresh:1;url=trabajos.php");
-	 		mysqli_close($conexion);
+		if (isset($_POST['enviar'])) {
+			if($_POST['cliente'] != ""){
+				$cliente = $_POST['cliente'];
+				$actualizar = "UPDATE trabajos SET titulo = '$titulo',descripción = '$descripcion',cliente = $cliente,precio = $precio,imagen = '$imagen' where id = $id";
+				mysqli_query($conexion,$actualizar);
+		 		echo "Se modificó correctamente, será redirigido inmediatamente";
+		 		header("refresh:1;url=trabajos.php");
+			}
 		}
-
+		mysqli_close($conexion);
+		footer();
 	?>
 </body>
 </html>

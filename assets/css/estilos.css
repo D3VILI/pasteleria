@@ -1,8 +1,162 @@
-.alturaCarrusell{
-	height: 700px !important;
+/*css del slider y general*/
+body{
+	background-color: #F5F5F5;
+	font-family: Oswald, sans-serif;
 }
-.dimensionDiv{
-	width: 50rem;
-	position: absolute;
+html{
+	min-height: 100vh;
+	position: relative;
+}
+@font-face{
+	font-family:Oswald;
+	src:url(../fonts/Oswald.ttf);
+}
+.bg-dark{
+	background-color: black !important;
+}
+.botonDerecha{
+	margin-right: 5px !important;
+	margin-bottom: 5px !important;
+}
+/*css acceso*/
+#iniciar{
 	text-align: center;
 }
+/*css de los inputs y text-muted*/
+.form-control{
+	color: #808080;
+	border:1px solid #E6E6E6;
+}
+input#imag{
+	height: calc(1.5em + .35rem + 2px);
+	padding: 0 !important;
+}
+.text-muted{
+	color:#BFBFBF !important; 
+}
+
+/*css de imagenes y divs*/
+.iv{
+	text-align: center;
+	color:white;
+	background-color: black;
+}
+.dimension{
+	width: 500px;
+	height: 300px;
+}
+#completa{
+	width: 100%;
+}
+.imagen{
+	height: 25%;
+}
+.arriba{
+	margin-top: 60px !important;
+}
+/*css de las tablas*/
+table{
+	margin-bottom: 0 !important;
+}
+.table td{
+	vertical-align: baseline;
+}
+.table-dark{
+	background-color: #404040;
+}
+div.calendario table{
+	margin-top: 10px !important;
+}
+
+/*css de titulos, iconos*/
+.titulo{
+	text-align: center;
+	margin-top: 20px;
+	margin-bottom: 30px;
+}
+.iconos-sociales{
+	font-size: 30px;
+	padding-left: 5px;
+}
+.iconosCalendario{
+	font-size: 30px;
+	padding-left: 5px;
+	color: #CD6225;
+}
+
+/*css de los botones y modificar*/
+.modificar{
+	color: #CD6225;
+}
+.modificar:hover{
+	color: #23CCCB;
+}
+.btn{
+	background-color: #CD6225;
+	color: white;
+	border:2px solid #FF8b47;
+}
+.btn:hover{
+	background-color: #CD6225;
+	color:black;
+	border-color: #CD6225;
+}
+.btn-primary{
+	background-color: #00807f;
+	border:2px solid #23CCCB;
+	border-radius: 5px;
+}
+.btn-primary:hover{
+	background-color: #00807f;
+	border-color: #00807f;
+}
+.botonNew{
+	background-color: #CD6225;
+	color: black;
+	border:2px solid #FF8b47;
+}
+.botonNew:hover{
+	color: white;
+}
+.disabled{
+	pointer-events: none;
+	cursor: default;
+}
+/*css de la paginacion*/
+.pagination{
+	margin-bottom: 0 !important;
+	margin-top: -40px;
+	float: right;
+	position: relative;
+	z-index: inherit;
+}
+.page-link{
+	color: #23CCCB;
+	background-color: #80360B;
+	border:1px solid #FF8b47;
+}
+.page-link:hover{
+	color: #FF8b47;
+	background-color: #00807F;
+	border:1px solid #FF8b47;
+}
+/*css del footer*/
+#footer{
+	color:white;
+	background-color: black;
+	width: 100%;
+	bottom: 0;
+}
+#footer a{
+	color: #CD6225;	
+}
+.centro{
+	text-align: center;
+}
+.derecha{
+	text-align: left;
+}
+.izquierda{
+	text-align: right;
+}
+

@@ -1,3 +1,8 @@
+<?php
+  session_start();
+  require_once("../funciones/funciones.php");
+  comprobarAdmin();
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -17,7 +22,6 @@
 </head>
 <body>
 	<?php
-		require_once("../funciones/funciones.php");
 		$conexion = conectarServidor();
 		$ruta = "../";
 		$archivos = "./";
@@ -25,27 +29,36 @@
 
 		$idIncremental = idActual("productos");
 
-		echo "<form action='fnproductos.php' method='post' enctype='multipart/form-data'>
-		Nombre:
-		<br>
-		<input type='text' name='nomb' required>
-		<br>
-		Descripción:
-		<br>
-		 <textarea name='descripcion' placeholder='Escribe...' required></textarea>
-		<br>
-		Precio:
-		<br>
-		<input type='text' name='precio'>
-		<br>
-		Seleccionar una Imagen:
-		<br>
-		<input type='file' name='imagen' required>
-		<br><br>
-		<input type='submit' name='enviar'>
-		</form>";
+		echo "<div class='container arriba'><form action='fnproductos.php' method='post' enctype='multipart/form-data'>
+		<div class='form-row'>
+			<div class='form-group col-md-6'>
+				<label for='$idIncremental'>ID</label>
+				<input type='text' class='form-control' id='$idIncremental' value='$idIncremental' disabled>
+			</div>
+			<div class='form-group col-md-6'>
+				<label for='nombre'>Nombre*</label>
+				<input type='text' class='form-control' id='nombre' name='nomb' required>
+			</div>
+		</div>
+		<div class='form-row'>
+			<div class='form-group col-md-4'>
+				<label for='descripcion'>Descripción*</label>
+				<textarea type='text' class='form-control' id='descripcion' name='descripcion' placeholder='Escribe...'></textarea>
+			</div>
+			<div class='form-group col-md-4'>
+				<label for='precio'>Precio*</label>
+				<input type='text' class='form-control' id='precio' name='precio' required>
+			</div>
+			<div class='form-group col-md-4'>
+				<label for='imag'>Seleccionar una Imagen*</label>
+				<input class='form-control' type='file' id='imag' name='imagen' required>
+			</div>
+		</div>
+		
+		<input class='btn-primary' type='submit' name='enviar'>
+		</form></div>";
 
-		if (isset($_POST['enviar']) && $_POST['nomb'] != "") {
+		if (isset($_POST['enviar']) && $_POST['nomb'] != "" && $_POST['descripcion'] != "" && $_POST['precio'] != "" && $_FILES['imagen']['size'] > 0) {
 			$nombre = $_POST['nomb'];
 			$descripcion = $_POST['descripcion'];
 			$precio = $_POST['precio'];
@@ -61,10 +74,12 @@
 
 			$insertar = "INSERT INTO productos (id,nombre,descripción,precio,imagen) VALUES (null,'$nombre','$descripcion',$precio,'$ruta')";
 			mysqli_query($conexion,$insertar);
-	 		echo "Se insertó correctamente";
-	 		mysqli_close($conexion);
+	 		echo "Se insertó correctamente,sera redirigido inmediatamente";
+	 			header("refresh:1;url=productos.php");
+	 		
 		}
-
+		mysqli_close($conexion);
+		footer();
 	?>
 </body>
 </html>

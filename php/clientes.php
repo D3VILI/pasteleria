@@ -1,3 +1,8 @@
+<?php
+  session_start();
+  require_once("../funciones/funciones.php");
+  comprobarAdmin();
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -14,23 +19,30 @@
      <script type="text/javascript" src="../assets/js/bootstrap.min.js"></script>
       <script type="text/javascript" src="../assets/js/bootstrap.bundle.min.js"></script>
       <script type="text/javascript" src="../assets/js/app.js"></script>
+      
 </head>
 <body>
 	<?php
-	require_once("../funciones/funciones.php");
 		$conexion = conectarServidor();
 		$ruta="../";
 		$archivos="./";
 		barra($ruta,$archivos);
+
+		$ruta = "clientes.php";
+		$archivos = "fnclientes.php";
+
+		barraBusqueda($ruta,$archivos,"Nuevo Cliente","nombre","apellidos");
 		
-		echo "<form class='form-inline my-2 my-lg-0' action='./clientes.php' method='post'>
-      	 <input class='form-control' type='Search' name='busc' placeholder='Buscar' aria-label='Search'>
-         <button class='btn btn-outline-success btn-sm my-sm-0 d-inline' name='buscar' type='submit'>Buscar</button>
-     	</form> <form action='./fnclientes.php'>
-    	 <input type='submit' value='Nuevo Cliente'/>
-		 </form>";
-		if (isset($_POST['buscar']) && $_POST['busc'] != "") {
+		if (isset($_POST['buscar']) && $_POST['busc'] != "" && $_POST['ordenar'] == "0") {
 			$consulta = "SELECT * FROM clientes where nombre like '%".$_POST['busc']."%' or apellidos like '%".$_POST['busc']."%' or telefono1 like '%".$_POST['busc']."%' or telefono2 like '%".$_POST['busc']."%'";
+			$res = mysqli_query($conexion,$consulta);
+			tablaClientes($res);
+		}elseif(isset($_POST['buscar']) && $_POST['busc'] != "" && $_POST['ordenar'] == "nombre"){
+			$consulta = "SELECT * FROM clientes where nombre like '%".$_POST['busc']."%' or apellidos like '%".$_POST['busc']."%' or telefono1 like '%".$_POST['busc']."%' or telefono2 like '%".$_POST['busc']."%' order by nombre";
+			$res = mysqli_query($conexion,$consulta);
+			tablaClientes($res);
+		}elseif(isset($_POST['buscar']) && $_POST['busc'] != "" && $_POST['ordenar'] == "apellidos"){
+			$consulta = "SELECT * FROM clientes where nombre like '%".$_POST['busc']."%' or apellidos like '%".$_POST['busc']."%' or telefono1 like '%".$_POST['busc']."%' or telefono2 like '%".$_POST['busc']."%' order by apellidos";
 			$res = mysqli_query($conexion,$consulta);
 			tablaClientes($res);
 		}else{
@@ -39,6 +51,7 @@
 			tablaClientes($res);
 		}
 		 mysqli_close($conexion);
+		 footer();
 	  ?>
 </body>
 </html>
